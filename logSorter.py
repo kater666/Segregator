@@ -3,36 +3,41 @@ import re
 import os
 
 
+class DirectoryManagement(object):
+
+    def __init__(self):
+        self.working_directory = os.getcwd()
+        self.search_directories = []
+
+    def go_into_directory(self, path):
+        os.chdir('./%s' % path)
+
+    def return_to_main_directory(self):
+        os.chdir(self.working_directory)
+
+    def get_directories(self):
+        search_directory = os.listdir('./')
+        print(search_directory)
+        for directory in search_directory:
+            if re.match('TC[0-9]+_[0-9]+', directory):
+                self.search_directories.append(directory)
+
+
 class LogBrowser(object):
 
-    def get_directories(self, path):
-        search_directory = os.listdir(path)
-        wanted_directories = []
-        for directory in search_directory:
-            if re.match('TC[0-9]+', directory):
-                wanted_directories.append(directory)
-        return wanted_directories
-
-    def get_test_case(self, file, pattern):
+    def search_test_name(self, file, pattern):
         log = open(file, 'r')
-        try:
-            search_string = log.readlines()
-            for line in search_string:
-                print(line)
-                test_name = self.find_test_name(line[:-1], pattern)
-                if test_name is not False and test_name[0] is 'ZSUBUNTU_12':
-                    return test_name
-        except ValueError:
-            raise('%s not found.' % pattern)
-        finally:
-            log.close()
+        for line in log.readlines():
+            found_name = self.find_pattern(line, pattern)
+            if found_name is not False:
+                return found_name
 
-    def find_test_name(self, search_line, pattern):
-        test_name = re.search(pattern, search_line)
-        match = test_name.group()
-        if type(match) is not None:
+    def find_pattern(self, search_line, pattern):
+        searched_expression = re.search(pattern, search_line)
+        try:
+            match = searched_expression.group(0)
             return match
-        else:
+        except AttributeError:
             return False
 
 
@@ -43,12 +48,8 @@ class TestCase(object):
         self.test_group = test_group
         self.status = status
 
-
-# init_class = LogBrowser()
-# os.chdir('./logs/TC1000_2135')
-# file_name = 'TC1000_2135.log'
-# found_name = init_class.get_test_case(file_name, 'ZSUBUNTU_([0-9]+)')
-# expected_name = 'ZSUBUNTU_12'
+# x = LogBrowser()
+# print(x.get_directories('./logs'))
 
 # na później
 # (ZSUBUNTU_[0-9])\w
