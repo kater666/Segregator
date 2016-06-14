@@ -37,17 +37,18 @@ def test_get_proper_directories():
 
 def test_pattern_found():
     x = LogBrowser()
-    search_line = 'PASSED:root:Test case: \'ZSUBUNTU_12\' result: passed'
-    found_name = x.find_pattern(search_line, 'ZSUBUNTU_([0-9]+)')
-    expected_name = 'ZSUBUNTU_12'
+    search_line = 'PASSED:root:Test case: \'ZS_UBUNTU_12\' result: passed'
+    found_name = x.find_pattern(search_line, 'ZS_UBUNTU_([0-9]+)')
+    expected_name = 'ZS_UBUNTU_12'
     assert found_name == expected_name
 
 
 def test_pattern_not_found():
     x = LogBrowser()
     search_line = 'PASSED:root:Test case: \'DUPA\' result: passed'
-    found_name = x.find_pattern(search_line, 'ZSUBUNTU_([0-9]+)')
-    expected_name = 'ZSUBUNTU_12'
+    pattern = 'ZS_UBUNTU_([0-9]+)'
+    found_name = x.find_pattern(search_line, pattern)
+    expected_name = 'ZS_UBUNTU_12'
     assert found_name != expected_name
 
 
@@ -55,9 +56,9 @@ def test_get_name_from_file():
     os.chdir('./logs/TC1000_2135')
     x = LogBrowser()
     file_name = 'TC1000_2135.log'
-    pattern = 'ZSUBUNTU_([0-9]+)'
+    pattern = 'ZS_UBUNTU_([0-9]+)'
     found_name = x.search_test_name(file_name, pattern)
-    expected_name = 'ZSUBUNTU_12'
+    expected_name = 'ZS_UBUNTU_12'
     os.chdir('../../')
     assert found_name == expected_name
 
@@ -66,9 +67,25 @@ def test_no_test_name_found_in_file():
     os.chdir('./logs/TC1000_2135')
     x = LogBrowser()
     file_name = 'TC1000_2135.log'
-    pattern = 'ZSUBUNTU_([0-9]+)'
+    pattern = 'ZS_UBUNTU_([0-9]+)'
     found_name = x.search_test_name(file_name, pattern)
     expected_name = 'DUPA'
     os.chdir('../../')
     assert found_name != expected_name
 
+
+def test_get_group_name():
+    x = LogBrowser()
+    search_line = 'PASSED:root:Test case: \'ZS_UBUNTU_12\' result: passed'
+    pattern = 'ZS_UBUNTU_([0-9]+)'
+    expected_name = 'Ubuntu_tests'
+    found_name = x.get_group_name(x.find_pattern(search_line, pattern))
+    assert expected_name == found_name
+
+
+# def test_id_name_group_name_and_id_returned():
+#     x = LogBrowser()
+#     expected = [1000, 'ZS_UBUNTU_12', 'Ubuntu_tests', 'ZS_UBUNTU']
+#     x.returner()
+#     actual = [x.tc_id, x.tc_name, x.group_name, x.group_id]
+#     assert expected == actual

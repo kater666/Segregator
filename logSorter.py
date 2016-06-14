@@ -1,6 +1,7 @@
 import glob
 import re
 import os
+import sqlite3
 
 
 class DirectoryManagement(object):
@@ -23,14 +24,37 @@ class DirectoryManagement(object):
                 self.search_directories.append(directory)
 
 
+# TODO: Basically DATABASE for next 2 classes
+class TestGroup(object):
+    def __init__(self, group_id, group_name, tc_count):
+        self.group_id = group_id
+        self.group_range = {}
+        self.group_name = group_name
+        self.tc_count = tc_count
+
+
+class TestCase(TestGroup):
+
+    def __init__(self, tc_id, tc_name, group_id, group_name, tc_status):
+        super(TestGroup, self).__init__()
+        self.tc_id = tc_id
+        self.tc_name = tc_name
+        self.group_id = group_id
+        self.group_name = group_name
+        self.tc_status = tc_status
+
+
 class LogBrowser(object):
 
     def search_test_name(self, file, pattern):
         log = open(file, 'r')
-        for line in log.readlines():
-            found_name = self.find_pattern(line, pattern)
-            if found_name is not False:
-                return found_name
+        try:
+            for line in log.readlines():
+                found_name = self.find_pattern(line, pattern)
+                if found_name:
+                    return found_name
+        finally:
+            log.close()
 
     def find_pattern(self, search_line, pattern):
         searched_expression = re.search(pattern, search_line)
@@ -40,13 +64,13 @@ class LogBrowser(object):
         except AttributeError:
             return False
 
-
-class TestCase(object):
-
-    def __init__(self, TCid, test_group, status):
-        self.TCid = TCid
-        self.test_group = test_group
-        self.status = status
+    # TODO: stworzyć bazę danych z nazwami grup testów
+    # TODO: odwoływać się do niej przy wyciąganiu nazwy grupy z loga
+    # TODO: refactor this shit
+    def get_group_name(self, match):
+        group_name = 'ZS_UBUNTU'
+        if group_name in match:
+            return 'Ubuntu_tests'
 
 # x = LogBrowser()
 # print(x.get_directories('./logs'))
