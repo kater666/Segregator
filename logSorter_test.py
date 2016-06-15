@@ -17,7 +17,7 @@ def test_change_directory():
 
 def test_return_to_primary_directory():
     x = DirectoryManagement()
-    starting_directory = 'D:\PycharmProjects\logSorter'
+    starting_directory = os.getcwd()
     x.go_into_directory('logs')
     x.return_to_main_directory()
     actual_directory = os.getcwd()
@@ -37,55 +37,54 @@ def test_get_proper_directories():
 
 def test_pattern_found():
     x = LogBrowser()
-    search_line = 'PASSED:root:Test case: \'ZS_UBUNTU_12\' result: passed'
-    found_name = x.find_pattern(search_line, 'ZS_UBUNTU_([0-9]+)')
-    expected_name = 'ZS_UBUNTU_12'
+    search_line = 'PASSED:root:Test case: \'FIRSTPART_UBUNTU_12\' result: passed'
+    pattern = x.pattern
+    found_name = x.find_pattern(search_line, pattern)
+    expected_name = 'FIRSTPART_UBUNTU_12'
     assert found_name == expected_name
 
 
 def test_pattern_not_found():
     x = LogBrowser()
     search_line = 'PASSED:root:Test case: \'DUPA\' result: passed'
-    pattern = 'ZS_UBUNTU_([0-9]+)'
+    pattern = x.pattern
     found_name = x.find_pattern(search_line, pattern)
-    expected_name = 'ZS_UBUNTU_12'
+    expected_name = 'FIRSTPART_UBUNTU_12'
     assert found_name != expected_name
 
 
 def test_get_name_from_file():
-    os.chdir('./logs/TC1000_2135')
+    y = DirectoryManagement()
+    y.go_into_directory('logs/TC1000_2135')
     x = LogBrowser()
     file_name = 'TC1000_2135.log'
-    pattern = 'ZS_UBUNTU_([0-9]+)'
+    pattern = x.pattern
     found_name = x.search_test_name(file_name, pattern)
-    expected_name = 'ZS_UBUNTU_12'
-    os.chdir('../../')
+    expected_name = 'FIRSTPART_UBUNTU_12'
+    y.return_to_main_directory()
     assert found_name == expected_name
 
 
 def test_no_test_name_found_in_file():
-    os.chdir('./logs/TC1000_2135')
+    y = DirectoryManagement()
+    y.go_into_directory('logs/TC1000_2135')
     x = LogBrowser()
     file_name = 'TC1000_2135.log'
-    pattern = 'ZS_UBUNTU_([0-9]+)'
+    pattern = x.pattern
     found_name = x.search_test_name(file_name, pattern)
-    expected_name = 'DUPA'
-    os.chdir('../../')
-    assert found_name != expected_name
+    expected_name = False
+    y.return_to_main_directory()
+    assert found_name == expected_name
 
 
 def test_get_group_name():
     x = LogBrowser()
-    search_line = 'PASSED:root:Test case: \'ZS_UBUNTU_12\' result: passed'
-    pattern = 'ZS_UBUNTU_([0-9]+)'
+    search_line = 'PASSED:root:Test case: \'FIRSTPART_UBUNTU_12\' result: passed'
+    pattern = x.pattern
     expected_name = 'Ubuntu_tests'
     found_name = x.get_group_name(x.find_pattern(search_line, pattern))
     assert expected_name == found_name
 
 
-# def test_id_name_group_name_and_id_returned():
-#     x = LogBrowser()
-#     expected = [1000, 'ZS_UBUNTU_12', 'Ubuntu_tests', 'ZS_UBUNTU']
-#     x.returner()
-#     actual = [x.tc_id, x.tc_name, x.group_name, x.group_id]
-#     assert expected == actual
+def test_no_group_should_be_found():
+    pass

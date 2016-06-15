@@ -26,6 +26,13 @@ class DirectoryManagement(object):
 
 # TODO: Basically DATABASE for next 2 classes
 class TestGroup(object):
+
+    groups = {
+        'FIRSTPART_UBUNTU': 'Ubuntu_tests',
+        'FIRSTPART_Windows': 'Windows_tests',
+        'FIRSTPART_OSX': 'OSX_tests'
+    }
+
     def __init__(self, group_id, group_name, tc_count):
         self.group_id = group_id
         self.group_range = {}
@@ -46,6 +53,15 @@ class TestCase(TestGroup):
 
 class LogBrowser(object):
 
+    groups = {
+        'FIRSTPART_UBUNTU': 'Ubuntu_tests',
+        'FIRSTPART_Windows': 'Windows_tests',
+        'FIRSTPART_OSX': 'OSX_tests'
+    }
+
+    def __init__(self):
+        self.pattern = 'FIRSTPART_.+_[0-9]+'
+
     def search_test_name(self, file, pattern):
         log = open(file, 'r')
         try:
@@ -53,6 +69,8 @@ class LogBrowser(object):
                 found_name = self.find_pattern(line, pattern)
                 if found_name:
                     return found_name
+                else:
+                    return False
         finally:
             log.close()
 
@@ -68,12 +86,11 @@ class LogBrowser(object):
     # TODO: odwoływać się do niej przy wyciąganiu nazwy grupy z loga
     # TODO: refactor this shit
     def get_group_name(self, match):
-        group_name = 'ZS_UBUNTU'
-        if group_name in match:
-            return 'Ubuntu_tests'
+        group_names = self.groups.keys()
+        for key in group_names:
+            if key in match:
+                return self.groups[key]
 
-# x = LogBrowser()
-# print(x.get_directories('./logs'))
 
 # na później
 # (ZSUBUNTU_[0-9])\w
