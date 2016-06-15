@@ -24,7 +24,6 @@ class DirectoryManagement(object):
                 self.search_directories.append(directory)
 
 
-# TODO: Basically DATABASE for next 2 classes
 class TestGroup(object):
 
     groups = {
@@ -62,18 +61,6 @@ class LogBrowser(object):
     def __init__(self):
         self.pattern = 'FIRSTPART_.+_[0-9]+'
 
-    def search_test_name(self, file, pattern):
-        log = open(file, 'r')
-        try:
-            for line in log.readlines():
-                found_name = self.find_pattern(line, pattern)
-                if found_name:
-                    return found_name
-                else:
-                    return False
-        finally:
-            log.close()
-
     def find_pattern(self, search_line, pattern):
         searched_expression = re.search(pattern, search_line)
         try:
@@ -82,9 +69,20 @@ class LogBrowser(object):
         except AttributeError:
             return False
 
-    # TODO: stworzyć bazę danych z nazwami grup testów
-    # TODO: odwoływać się do niej przy wyciąganiu nazwy grupy z loga
-    # TODO: refactor this shit
+    def search_test_name(self, file, pattern):
+        log = open(file, 'r')
+        try:
+            for line in log.readlines():
+                found_name = self.find_pattern(line, pattern)
+                group_name = self.get_group_name(found_name)
+                if found_name:
+                    return found_name
+        finally:
+            log.close()
+
+    def get_test_case_id(self, match):
+        pass
+
     def get_group_name(self, match):
         group_names = self.groups.keys()
         for key in group_names:
