@@ -1,7 +1,6 @@
 import glob
 import re
 import os
-import sqlite3
 
 
 class DirectoryManagement(object):
@@ -61,35 +60,39 @@ class LogBrowser(object):
     def __init__(self):
         self.pattern = 'FIRSTPART_.+_[0-9]+'
 
-    def find_pattern(self, search_line, pattern):
-        searched_expression = re.search(pattern, search_line)
+    def find_pattern(self, search_line):
+        searched_expression = re.search(self.pattern, search_line)
         try:
-            match = searched_expression.group(0)
-            return match
+            return searched_expression.group(0)
         except AttributeError:
             return False
 
-    def search_test_name(self, file, pattern):
+    def search_pattern_in_file(self, file):
         log = open(file, 'r')
         try:
             for line in log.readlines():
-                found_name = self.find_pattern(line, pattern)
-                group_name = self.get_group_name(found_name)
+                found_name = self.find_pattern(line)
                 if found_name:
                     return found_name
         finally:
             log.close()
 
-    def get_test_case_id(self, match):
-        pass
-
     def get_group_name(self, match):
-        group_names = self.groups.keys()
-        for key in group_names:
+        for key in self.groups.keys():
             if key in match:
                 return self.groups[key]
 
+    def get_test_case_id(self, match):
+        pass
 
+
+# y = DirectoryManagement()
+# y.go_into_directory('logs/TC1000_2135')
+# x = LogBrowser()
+# line = 'PASSED:root:Test case: \'FIRSTPART_UBUNTU_12\' result: passed'
+# print(x.search_pattern_in_file('TC1000_2135.log'))
+#
+# print('group name', x.get_group_name(x.find_pattern(line)))
 # na później
 # (ZSUBUNTU_[0-9])\w
 # (?:abc)	non-capturing group
