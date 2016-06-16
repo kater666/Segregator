@@ -1,26 +1,5 @@
-import glob
-import re
 import os
-
-
-class DirectoryManagement(object):
-
-    def __init__(self):
-        self.working_directory = os.getcwd()
-        self.search_directories = []
-
-    def go_into_directory(self, path):
-        os.chdir('./%s' % path)
-
-    def return_to_main_directory(self):
-        os.chdir(self.working_directory)
-
-    def get_directories(self):
-        search_directory = os.listdir('./')
-        print(search_directory)
-        for directory in search_directory:
-            if re.match('TC[0-9]+_[0-9]+', directory):
-                self.search_directories.append(directory)
+import re
 
 
 class TestGroup(object):
@@ -71,28 +50,68 @@ class LogBrowser(object):
         log = open(file, 'r')
         try:
             for line in log.readlines():
-                found_name = self.find_pattern(line)
-                if found_name:
-                    return found_name
+                found_pattern = self.find_pattern(line)
+                if found_pattern:
+                    return found_pattern
         finally:
             log.close()
 
     def get_group_name(self, match):
         for key in self.groups.keys():
             if key in match:
+                # Returns group name from dictionary if found.
                 return self.groups[key]
 
     def get_test_case_id(self, match):
         pass
 
 
-# y = DirectoryManagement()
-# y.go_into_directory('logs/TC1000_2135')
-# x = LogBrowser()
-# line = 'PASSED:root:Test case: \'FIRSTPART_UBUNTU_12\' result: passed'
-# print(x.search_pattern_in_file('TC1000_2135.log'))
-#
-# print('group name', x.get_group_name(x.find_pattern(line)))
+class DirectoryManagement(LogBrowser):
+
+    def __init__(self):
+        LogBrowser.__init__(self)
+        self.working_directory = os.getcwd()
+        self.search_directories = []
+        self.created_directories = []
+        self.update_created_directories()
+
+    def go_into_directory(self, path):
+        os.chdir('./%s' % path)
+
+    def return_to_main_directory(self):
+        os.chdir(self.working_directory)
+
+    def get_directories(self):
+        """
+        Method browses cwd searching for folders with TCXXXX in name.
+        It updates self.search_directories which will be entered by later methods.
+        """
+        search_directory = os.listdir('./')
+        for directory in search_directory:
+            if re.match('TC[0-9]+_[0-9]+', directory):
+                self.search_directories.append(directory)
+
+    def update_created_directories(self):
+        self.return_to_main_directory()
+        found_directories = os.listdir('./')
+        for directory in found_directories:
+            # If directory should be in self.created_directories but !It is not!
+            if directory in self.groups.values() and directory not in self.created_directories:
+                self.created_directories.append(directory)
+
+    def create_group_directory(self, file):
+        match = self.search_pattern_in_file(file)
+        group_name = self.get_group_name(match)
+        if group_name not in self.created_directories:
+            os.makedirs(self.working_directory + '\\%s' % group_name)
+            self.created_directories.append(group_name)
+        else:
+            pass
+
+
+
+# surf self.search_directories and create required directories
+
 # na później
 # (ZSUBUNTU_[0-9])\w
 # (?:abc)	non-capturing group
