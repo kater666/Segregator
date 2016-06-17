@@ -61,23 +61,6 @@ def test_no_group_should_be_found():
     assert expected_name == found_name
 
 
-def test_create_directory_with_found_group_name():
-    os.chdir('D:\PycharmProjects\logSorter\logs')
-    y = DirectoryManagement()
-    y.go_into_directory('TC1000_2135')
-    y.create_group_directory('TC1000_2135.log')
-    expected_directory = 'Ubuntu_tests'
-    # Delete created directory after test.
-    y.return_to_main_directory()
-    #shutil.rmtree('./Ubuntu_tests')
-    assert expected_directory in y.created_directories
 
-
-def test_created_directories_updated():
-    os.chdir('D:\PycharmProjects\logSorter\logs')
-    y = DirectoryManagement()
-    y.update_created_directories()
-    expected_directories = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
-    assert expected_directories == y.created_directories
 
 # Sprawdź gdzie jest pobierane working_directory, czy może inaczej puszczać testy pod względem ścieżki

@@ -1,3 +1,5 @@
+import shutil
+
 import pytest
 import os
 from logSorter import DirectoryManagement
@@ -26,7 +28,52 @@ def test_get_proper_directories():
     y = DirectoryManagement()
     y.go_into_directory('logs')
     x = DirectoryManagement()
-    x.get_directories()
+    x.get_search_directories()
     wanted_directories = ['TC0000_0000', 'TC1000_2135', 'TC3267_1032', 'TC3268_1032']
     y.return_to_main_directory()
     assert wanted_directories == x.search_directories
+
+
+def test_create_directory_with_found_group_name():
+    os.chdir('D:\PycharmProjects\logSorter\logs')
+    y = DirectoryManagement()
+    y.go_into_directory('TC3268_1032')
+    y.create_group_directory('TC3268_1032.log')
+    expected_directory = 'OSX_tests'
+    # Delete created directory after test.
+    y.return_to_main_directory()
+    shutil.rmtree('./OSX_tests')
+    assert expected_directory in y.created_directories
+
+
+def test_already_created_directory():
+    os.chdir('D:\PycharmProjects\logSorter\logs')
+    y = DirectoryManagement()
+    y.go_into_directory('TC1000_2135')
+    result = y.create_group_directory('TC1000_2135.log')
+    expected = False
+    assert result == expected
+
+
+def test_created_directories_updated():
+    os.chdir('D:\PycharmProjects\logSorter\logs')
+    y = DirectoryManagement()
+    y.update_created_directories()
+    expected_directories = ['Ubuntu_tests', 'Windows_tests']
+    assert expected_directories == y.created_directories
+
+
+def test_create_txt_with_directories_to_be_created():
+    os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs')
+    y = DirectoryManagement()
+    found = []
+    f = open('directories.txt', 'r')
+    for i in f.readlines():
+        if i is not '\n':
+            found.append(i)
+        else:
+            pass
+
+    found.sort()
+    expected = ['OSX_tests\n', 'Ubuntu_tests\n', 'Windows_tests\n']
+    assert found == expected
