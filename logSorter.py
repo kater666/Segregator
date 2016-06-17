@@ -115,7 +115,7 @@ class DirectoryManagement(LogBrowser):
             self.go_into_directory(directory)
             group_name = self.get_group_name(self.search_pattern_in_file(directory + '.log'))
             self.return_to_main_directory()
-            if group_name:
+            if group_name and group_name not in dirs_2b_created:
                 dirs_2b_created.append(group_name)
             else:
                 pass

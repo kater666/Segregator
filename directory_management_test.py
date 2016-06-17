@@ -77,3 +77,19 @@ def test_create_txt_with_directories_to_be_created():
     found.sort()
     expected = ['OSX_tests\n', 'Ubuntu_tests\n', 'Windows_tests\n']
     assert found == expected
+
+
+def test_found_group_name_again_should_not_append_log():
+    os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs\more_logz')
+    y = DirectoryManagement()
+    found = []
+    f = open('directories.txt', 'r')
+    for i in f.readlines():
+        if i is not '\n':
+            found.append(i)
+        else:
+            pass
+
+    found.sort()
+    expected = ['OSX_tests\n', 'Ubuntu_tests\n', 'Windows_tests\n']
+    assert found == expected
