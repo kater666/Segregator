@@ -79,6 +79,7 @@ class DirectoryManagement(LogBrowser):
 
         # Call methods to collect required data.
         self.update_created_directories()
+        self.created_directories.sort()
         self.get_search_directories()
         self.search_directories.sort()
         self.collect_directories_to_be_created()
@@ -90,6 +91,7 @@ class DirectoryManagement(LogBrowser):
     def return_to_main_directory(self):
         os.chdir(self.working_directory)
 
+    #1
     def get_search_directories(self):
         """
         Method browses cwd searching for folders with TCXXXX in name.
@@ -100,6 +102,7 @@ class DirectoryManagement(LogBrowser):
             if re.match('TC[0-9]+_[0-9]+', directory) and directory not in self.search_directories:
                 self.search_directories.append(directory)
 
+    #2
     def update_created_directories(self):
         self.return_to_main_directory()
         found_directories = os.listdir('./')
@@ -108,13 +111,14 @@ class DirectoryManagement(LogBrowser):
             if directory in self.groups.values() and directory not in self.created_directories:
                 self.created_directories.append(directory)
 
+    #3
     def collect_directories_to_be_created(self):
-        """ go into file, read group name, write it's name to .txt """
+        """ Go into file, read group name, write it's name to .txt """
         dirs_2b_created = []
         for directory in self.search_directories:
             self.go_into_directory(directory)
-            group_name = self.get_group_name(self.search_pattern_in_file(directory + '.log'))
-            self.return_to_main_directory()
+            group_name = self.get_group_name(self.search_pattern_in_file(directory + '.log'))   # change this to proper
+            self.return_to_main_directory()                                                     # file extension
             if group_name and group_name not in dirs_2b_created:
                 dirs_2b_created.append(group_name)
             else:
@@ -125,6 +129,7 @@ class DirectoryManagement(LogBrowser):
         for line in dirs_2b_created:
             directory_log.write(line + '\n')
 
+    #4
     def create_group_directory(self, file):
         match = self.search_pattern_in_file(file)
         group_name = self.get_group_name(match)
