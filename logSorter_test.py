@@ -62,5 +62,5 @@ def test_no_group_should_be_found():
 
 
 
-
+# probably tests won't work
 # Sprawdź gdzie jest pobierane working_directory, czy może inaczej puszczać testy pod względem ścieżki

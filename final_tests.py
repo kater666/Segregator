@@ -1,4 +1,7 @@
+import glob
 import os
+import shutil
+
 import pytest
 
 from logSorter import DirectoryManagement
@@ -23,8 +26,6 @@ def test_created_directories_not_empty():
     os.chdir('D:\PycharmProjects\logSorter\logs')
     y = DirectoryManagement()
     expected = ['Ubuntu_tests', 'Windows_tests']
-    # Remove test file.
-    os.remove('./directories.txt')
     assert expected == y.created_directories
 
 
@@ -32,23 +33,19 @@ def test_directiories_to_be_created():
     os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs')
     y = DirectoryManagement()
     y.collect_directories_to_be_created()
-
-    found = []
-    f = open('directories.txt', 'r')
-    for i in f.readlines():
-        if i is not '\n':
-            found.append(i)
-        else:
-            pass
-
-    f.close()
-    found.sort()
-    expected = ['OSX_tests\n', 'Ubuntu_tests\n', 'Windows_tests\n']
-    # Remove test file.
-    os.remove('./directories.txt')
-    assert found == expected
+    expected = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
+    assert y.required_directories == expected
 
 
 def test_create_group_directory():
     os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs\\more_logz')
     y = DirectoryManagement()
+    y.create_group_directory2()
+    expected = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
+
+    # Remove tests directories
+    for crap in glob.glob('*_tests'):
+        shutil.rmtree(crap)
+    assert expected == y.created_directories
+
+# Below tests run in directory:

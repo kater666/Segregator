@@ -104,3 +104,5 @@ def test_found_group_name_again_should_not_append_log():
     expected = ['OSX_tests\n', 'Ubuntu_tests\n', 'Windows_tests\n']
     os.remove('./directories.txt')
     assert found == expected
+
+# probably tests won't work
