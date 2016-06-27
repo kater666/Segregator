@@ -10,22 +10,20 @@ class TestGroup(object):
         'FIRSTPART_OSX': 'OSX_tests'
     }
 
-    def __init__(self, group_id, group_name, tc_count):
-        self.group_id = group_id
-        self.group_range = {}
-        self.group_name = group_name
-        self.tc_count = tc_count
+    def __init__(self):
+        #self.group_range = {}  #maybe will not be used
+        self.group_name = ''
+        self.tc_count = 0
 
 
 class TestCase(TestGroup):
 
-    def __init__(self, tc_id, tc_name, group_id, group_name, tc_status):
+    def __init__(self):
         super(TestGroup, self).__init__()
-        self.tc_id = tc_id
-        self.tc_name = tc_name
-        self.group_id = group_id
-        self.group_name = group_name
-        self.tc_status = tc_status
+        self.tc_id = ''
+        self.tc_name = ''
+        self.group_name = ''
+        self.tc_status = 'Unknown'
 
 
 class LogBrowser(object):
@@ -48,6 +46,8 @@ class LogBrowser(object):
 
     def search_pattern_in_file(self, file):
         """ Method will search for pattern like groups.keys() """
+        statuses = ['PASSED', 'FAILED', 'BLOCKED']
+
         log = open(file, 'r')
         try:
             for line in log.readlines():
@@ -65,8 +65,19 @@ class LogBrowser(object):
             else:
                 pass
 
-    def get_test_case_id(self, match):
-        pass
+    def get_test_case_status(self, file):
+        statuses = ['PASSED', 'FAILED', 'BLOCKED']
+        log = open(file, 'r')
+        try:
+            for line in log.readlines():
+                for i in statuses:
+                    status = re.search(i, line)
+                    try:
+                        return status.group(0)
+                    except AttributeError:
+                        return 'Not found'
+        finally:
+            log.close()
 
 
 class DirectoryManagement(LogBrowser):
@@ -97,7 +108,7 @@ class DirectoryManagement(LogBrowser):
         """
         search_directory = os.listdir('./')
         for directory in search_directory:
-            if re.match('TC[0-9]+_[0-9]+', directory) and directory not in self.search_directories:
+            if re.match(r'TC[0-9]+_[0-9]+', directory) and directory not in self.search_directories:
                 self.search_directories.append(directory)
 
         self.search_directories.sort()
@@ -137,6 +148,31 @@ class DirectoryManagement(LogBrowser):
         self.required_directories = self.required_directories[:]
         self.update_created_directories()
 
-# na później
+    def get_test_case_data(self, test_case):
+
+        test_case_object = TestCase()
+
+        for directory in self.search_directories:
+            # case: TC1000_2135
+            if test_case in directory:
+                self.go_into_directory(directory)
+                file_name = ('%s.log' % directory)
+                # Returns test case's id. This might need to be changed - obtained from something else.
+                test_case_object.tc_id = test_case
+                # Returns whole found expression, at least I hope.
+                test_case_object.tc_name = self.search_pattern_in_file(file_name)
+                # Gets group's name based on found expression.
+                test_case_object.group_name = self.get_group_name(test_case_object.tc_name)
+                # Gets test case's status. I hope...
+                test_case_object.tc_status = self.get_test_case_status(file_name)
+
+
+        return test_case_object
+            #jeszcze nie wiem co to:
+            # match = re.match(r'TC[0-9]+', case)
+            # if test_case in match.group(0):
+            #     tc_id = match.group(1)
+
+
 # (ZSUBUNTU_[0-9])\w
 # (?:abc)	non-capturing group
