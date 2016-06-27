@@ -11,7 +11,7 @@ class TestGroup(object):
         self.passes = 0
         self.fails = 0
         self.blocks = 0
-        
+
 
 class TestCase(TestGroup):
 
