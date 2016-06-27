@@ -4,17 +4,14 @@ import re
 
 class TestGroup(object):
 
-    groups = {
-        'FIRSTPART_UBUNTU': 'Ubuntu_tests',
-        'FIRSTPART_Windows': 'Windows_tests',
-        'FIRSTPART_OSX': 'OSX_tests'
-    }
-
     def __init__(self):
         #self.group_range = {}  #maybe will not be used
         self.group_name = ''
         self.tc_count = 0
-
+        self.passes = 0
+        self.fails = 0
+        self.blocks = 0
+        
 
 class TestCase(TestGroup):
 
@@ -46,8 +43,6 @@ class LogBrowser(object):
 
     def search_pattern_in_file(self, file):
         """ Method will search for pattern like groups.keys() """
-        statuses = ['PASSED', 'FAILED', 'BLOCKED']
-
         log = open(file, 'r')
         try:
             for line in log.readlines():
@@ -75,7 +70,9 @@ class LogBrowser(object):
                     try:
                         return status.group(0)
                     except AttributeError:
-                        return 'Not found'
+                        continue
+            else:
+                return 'Not found'
         finally:
             log.close()
 
@@ -129,7 +126,7 @@ class DirectoryManagement(LogBrowser):
         """ Go into file, read group name, write it's name to .txt """
         for directory in self.search_directories:
             self.go_into_directory(directory)
-            # TODO: change file extension to log's extiension.
+            # TODO: change file extension to log's extension.
             group_name = self.get_group_name(self.search_pattern_in_file(directory + '.log'))
             self.return_to_main_directory()
             if group_name and group_name not in self.required_directories:
@@ -166,12 +163,7 @@ class DirectoryManagement(LogBrowser):
                 # Gets test case's status. I hope...
                 test_case_object.tc_status = self.get_test_case_status(file_name)
 
-
         return test_case_object
-            #jeszcze nie wiem co to:
-            # match = re.match(r'TC[0-9]+', case)
-            # if test_case in match.group(0):
-            #     tc_id = match.group(1)
 
 
 # (ZSUBUNTU_[0-9])\w

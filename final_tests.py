@@ -55,17 +55,17 @@ class FinalTest(unittest.TestCase):
         x.return_to_main_directory()
         self.assertEqual(status, expected)
 
-    # def test_single_test_case(self):
-    #     y = DirectoryManagement()
-    #     id = y.get_test_case_data('TC1000')
-    #     actual = [
-    #       id.tc_id,
-    #       id.tc_name,
-    #       id.group_name,
-    #       id.tc_status
-    #     ]
-    #     expected = ['TC1000', 'FIRSTPART_UBUNTU_12', 'Ubuntu_tests', 'PASSED']
-    #     self.assertEqual(actual, expected)
+    def test_single_test_case(self):
+        y = DirectoryManagement()
+        id = y.get_test_case_data('TC1000')
+        actual = [
+          id.tc_id,
+          id.tc_name,
+          id.group_name,
+          id.tc_status
+        ]
+        expected = ['TC1000', 'FIRSTPART_UBUNTU_12', 'Ubuntu_tests', 'PASSED']
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()
