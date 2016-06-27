@@ -4,11 +4,12 @@ import os
 import shutil
 import unittest
 
-
+from ddt import ddt, data
 from logSorter import DirectoryManagement
 from logSorter import TestCase as TC
 
 
+@ddt
 class FinalTest(unittest.TestCase):
     def setUp(self):
         os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs')
@@ -16,7 +17,7 @@ class FinalTest(unittest.TestCase):
     def test_get_search_directories(self):
         y = DirectoryManagement()
         y.get_search_directories()
-        expected_directories = ['TC0000_0000', 'TC1000_2135', 'TC3267_1032', 'TC3268_1032']
+        expected_directories = ['TC0000_0000', 'TC0001_0000', 'TC1000_2135', 'TC3267_1032', 'TC3268_1032']
         assert y.search_directories == expected_directories
 
     def test_created_directories_should_be_empty(self):
@@ -47,11 +48,20 @@ class FinalTest(unittest.TestCase):
             shutil.rmtree(crap)
         assert expected == y.created_directories
 
-    def test_get_test_case_status(self):
+    @data(('TC1000_2135', 'PASSED'), ('TC3267_1032', 'FAILED'), ('TC3268_1032', 'BLOCKED'))
+    def test_get_test_case_status(self, value):
         x = DirectoryManagement()
-        x.go_into_directory('TC1000_2135')
-        status = x.get_test_case_status('TC1000_2135.log')
-        expected = 'PASSED'
+        x.go_into_directory('%s' % value[0])
+        status = x.get_test_case_status('%s.log' % value[0])
+        expected = value[1]
+        x.return_to_main_directory()
+        self.assertEqual(status, expected)
+
+    def test_status_not_found(self):
+        x = DirectoryManagement()
+        x.go_into_directory('TC0001_0000')
+        status = x.get_test_case_status('TC0001_0000.log')
+        expected = 'Not found'
         x.return_to_main_directory()
         self.assertEqual(status, expected)
 
