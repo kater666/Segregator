@@ -13,6 +13,11 @@ class FinalTest(unittest.TestCase):
     def setUp(self):
         os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs')
 
+    def remove_test_directories(self):
+        # Remove tests directories
+        for crap in glob.glob('*_tests'):
+            shutil.rmtree(crap)
+
     def test_get_search_directories(self):
         y = DirectoryManagement()
         y.get_search_directories()
@@ -42,9 +47,7 @@ class FinalTest(unittest.TestCase):
         y.create_group_directory2()
         expected = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
 
-        # Remove tests directories
-        for crap in glob.glob('*_tests'):
-            shutil.rmtree(crap)
+        self.remove_test_directories()
 
         assert expected == y.created_directories
 
@@ -67,16 +70,47 @@ class FinalTest(unittest.TestCase):
 
     def test_single_test_case(self):
         y = DirectoryManagement()
-        id = y.get_test_case_data()[2]
+        test_data = y.get_test_cases()[2]
         actual = [
-          id.tc_id,
-          id.tc_name,
-          id.group_name,
-          id.tc_status
+            test_data.tc_id,
+            test_data.tc_name,
+            test_data.group_name,
+            test_data.tc_status
         ]
         expected = ['TC1000_2135', 'FIRSTPART_UBUNTU_12', 'Ubuntu_tests', 'PASSED']
         self.assertEqual(actual, expected)
 
+    def test_create_groups(self):
+        y = DirectoryManagement()
+        y.create_group_directory2()
+
+        self.remove_test_directories()
+
+        created_groups = y.create_test_group()
+        actual = created_groups.keys()
+        expected = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
+        self.assertEqual(sorted(actual), expected)
+
+    def test_sort_tests_into_groups(self):
+        y = DirectoryManagement()
+        y.create_group_directory2()
+
+        self.remove_test_directories()
+
+        # Get required test data.
+        test_cases = y.get_test_cases()
+        created_groups = y.create_test_group()
+
+        # Tested method.
+        y.sort_test_cases_into_groups(test_cases, created_groups)
+
+        first_test = created_groups['Ubuntu_tests'].test_cases[0].tc_name
+        second_test = created_groups['Windows_tests'].test_cases[0].tc_name
+        third_test = created_groups['OSX_tests'].test_cases[0].tc_name
+
+        self.assertEqual(first_test, 'FIRSTPART_UBUNTU_12')
+        self.assertEqual(second_test, 'FIRSTPART_Windows_452')
+        self.assertEqual(third_test, 'FIRSTPART_OSX_87')
 
 if __name__ == '__main__':
     unittest.main()

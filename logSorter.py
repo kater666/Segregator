@@ -1,13 +1,16 @@
+import glob
 import os
 import re
+import shutil
 
 
 class TestGroup(object):
 
-    def __init__(self):
+    def __init__(self, group_name):
         #self.group_range = {}  #maybe will not be used
-        self.group_name = ''
-        self.tc_count = 0
+        self.group_name = group_name
+        self.test_cases = []
+        self.tc_count = len(self.test_cases)
         self.passes = 0
         self.fails = 0
         self.blocks = 0
@@ -146,7 +149,7 @@ class DirectoryManagement(LogBrowser):
         self.required_directories = self.required_directories[:]
         self.update_created_directories()
 
-    def get_test_case_data(self):
+    def get_test_cases(self):
 
         test_cases = []
 
@@ -164,8 +167,27 @@ class DirectoryManagement(LogBrowser):
 
         return test_cases
 
-    def sort_test_cases_into_groups(self):
+    def create_test_group(self):
+        created_groups = {}
+        for directory in self.created_directories:
+            # directory is a name of a group
+            # directory = 'Ubuntu_tests'
+            group = TestGroup(directory)
+            created_groups[directory] = group
 
+        return created_groups
+
+    def sort_test_cases_into_groups(self, test_cases, test_groups):
+        """
+        test_cases is a list of TestCase class objects.
+        test_group is a dictionary with keys - group names, values - TestGroup class objects.
+        """
+        for test in test_cases:
+            # test is a single TestCase class object.
+            for group in test_groups.keys():
+                # group is a single string ('Ubuntu_tests')
+                if group == test.group_name:
+                    test_groups[group].test_cases.append(test)
 
 
     def sort_directories(self):
@@ -175,6 +197,26 @@ class DirectoryManagement(LogBrowser):
 os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
 y = DirectoryManagement()
 
+y.create_group_directory2()
+
+for crap in glob.glob('*_tests'):
+    shutil.rmtree(crap)
+
+# Get required test data.
+test_cases = y.get_test_cases()
+groups = y.create_test_group()
+
+# Tested method.
+y.sort_test_cases_into_groups(test_cases, groups)
+for i in test_cases:
+    print(i.__dict__)
+
+for key in groups:
+    print(groups[key].test_cases[0].tc_name)
+    print(groups[key].test_cases[0].tc_status)
+    print(groups[key].test_cases[0].tc_id)
+    print(groups[key].test_cases[0].group_name)
+    print('\n')
 
 
 # (ZSUBUNTU_[0-9])\w
