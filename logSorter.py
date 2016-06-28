@@ -11,6 +11,7 @@ class TestGroup(object):
         self.passes = 0
         self.fails = 0
         self.blocks = 0
+        self.directory_path = ''
 
 
 class TestCase(TestGroup):
@@ -145,25 +146,35 @@ class DirectoryManagement(LogBrowser):
         self.required_directories = self.required_directories[:]
         self.update_created_directories()
 
-    def get_test_case_data(self, test_case):
+    def get_test_case_data(self):
 
-        test_case_object = TestCase()
+        test_cases = []
 
         for directory in self.search_directories:
-            # case: TC1000_2135
-            if test_case in directory:
-                self.go_into_directory(directory)
-                file_name = ('%s.log' % directory)
-                # Returns test case's id. This might need to be changed - obtained from something else.
-                test_case_object.tc_id = test_case
-                # Returns whole found expression, at least I hope.
-                test_case_object.tc_name = self.search_pattern_in_file(file_name)
-                # Gets group's name based on found expression.
-                test_case_object.group_name = self.get_group_name(test_case_object.tc_name)
-                # Gets test case's status. I hope...
-                test_case_object.tc_status = self.get_test_case_status(file_name)
+            self.go_into_directory(directory)
 
-        return test_case_object
+            test_case_object = TestCase()
+            file_name = ('%s.log' % directory)
+            test_case_object.tc_id = directory
+            test_case_object.tc_name = self.search_pattern_in_file(file_name)
+            test_case_object.group_name = self.get_group_name(test_case_object.tc_name)
+            test_case_object.tc_status = self.get_test_case_status(file_name)
+            test_cases.append(test_case_object)
+            self.return_to_main_directory()
+
+        return test_cases
+
+    def sort_test_cases_into_groups(self):
+
+
+
+    def sort_directories(self):
+        pass
+
+
+os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
+y = DirectoryManagement()
+
 
 
 # (ZSUBUNTU_[0-9])\w

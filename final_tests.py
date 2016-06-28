@@ -1,16 +1,15 @@
 import glob
-import logging
 import os
 import shutil
 import unittest
 
 from ddt import ddt, data
 from logSorter import DirectoryManagement
-from logSorter import TestCase as TC
 
 
 @ddt
 class FinalTest(unittest.TestCase):
+
     def setUp(self):
         os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs')
 
@@ -46,6 +45,7 @@ class FinalTest(unittest.TestCase):
         # Remove tests directories
         for crap in glob.glob('*_tests'):
             shutil.rmtree(crap)
+
         assert expected == y.created_directories
 
     @data(('TC1000_2135', 'PASSED'), ('TC3267_1032', 'FAILED'), ('TC3268_1032', 'BLOCKED'))
@@ -67,15 +67,16 @@ class FinalTest(unittest.TestCase):
 
     def test_single_test_case(self):
         y = DirectoryManagement()
-        id = y.get_test_case_data('TC1000')
+        id = y.get_test_case_data()[2]
         actual = [
           id.tc_id,
           id.tc_name,
           id.group_name,
           id.tc_status
         ]
-        expected = ['TC1000', 'FIRSTPART_UBUNTU_12', 'Ubuntu_tests', 'PASSED']
+        expected = ['TC1000_2135', 'FIRSTPART_UBUNTU_12', 'Ubuntu_tests', 'PASSED']
         self.assertEqual(actual, expected)
+
 
 if __name__ == '__main__':
     unittest.main()
