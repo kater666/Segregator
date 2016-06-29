@@ -167,7 +167,7 @@ class DirectoryManagement(LogBrowser):
 
         return test_cases
 
-    def create_test_group(self):
+    def create_test_groups(self):
         created_groups = {}
         for directory in self.created_directories:
             # directory is a name of a group
@@ -188,36 +188,48 @@ class DirectoryManagement(LogBrowser):
                 # group is a single string ('Ubuntu_tests')
                 if group == test.group_name:
                     test_groups[group].test_cases.append(test)
+                    if test.tc_status == 'PASSED':
+                        test_groups[group].passes += 1
+                    elif test.tc_status == 'FAILED':
+                        test_groups[group].fails += 1
+                    elif test.tc_status == 'BLOCKED':
+                        test_groups[group].blocks += 1
 
-
-    def sort_directories(self):
+    def sort_directories(self, test_group):
         pass
 
 
-os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
-y = DirectoryManagement()
+def main():
+    os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
+    y = DirectoryManagement()
 
-y.create_group_directory2()
+    y.create_group_directory2()
 
-for crap in glob.glob('*_tests'):
-    shutil.rmtree(crap)
+    for crap in glob.glob('*_tests'):
+        shutil.rmtree(crap)
 
-# Get required test data.
-test_cases = y.get_test_cases()
-groups = y.create_test_group()
+    # Get required test data.
+    test_cases = y.get_test_cases()
+    groups = y.create_test_groups()
 
-# Tested method.
-y.sort_test_cases_into_groups(test_cases, groups)
-for i in test_cases:
-    print(i.__dict__)
+    # Tested method.
+    y.sort_test_cases_into_groups(test_cases, groups)
 
-for key in groups:
-    print(groups[key].test_cases[0].tc_name)
-    print(groups[key].test_cases[0].tc_status)
-    print(groups[key].test_cases[0].tc_id)
-    print(groups[key].test_cases[0].group_name)
-    print('\n')
+    # for i in test_cases:
+    #     print(i.__dict__)
 
+    for key in groups:
+        print('======== %s =======' % key)
+        print('passes:', groups[key].passes)
+        print('fails:', groups[key].fails)
+        print('blocks:', groups[key].blocks)
+        print('Test cases:\n')
+        for i in groups[key].test_cases:
+            print(i.tc_name)
+            print(i.tc_status)
+            print(i.tc_id)
+            print(i.group_name)
+            print('\n')
 
-# (ZSUBUNTU_[0-9])\w
-# (?:abc)	non-capturing group
+if __name__ == '__main__':
+    main()

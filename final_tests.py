@@ -5,6 +5,7 @@ import unittest
 
 from ddt import ddt, data
 from logSorter import DirectoryManagement
+from relocator import movedirectories
 
 
 @ddt
@@ -12,6 +13,19 @@ class FinalTest(unittest.TestCase):
 
     def setUp(self):
         os.chdir('D:\PycharmProjects\logSorter\directory_management_test_logs')
+
+    def create_envionment(self):
+        path = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
+        os.chdir(path)
+        actual = os.listdir('./')
+        required = ['TC0000_0000', 'TC0001_0000', 'TC1000_2135', 'TC1000_4587', 'TC1001_2548', 'TC1002_5435', 'TC3267_1032',
+         'TC3268_1032']
+
+        if actual != required:
+            shutil.rmtree(path, ignore_errors=True)
+            s = 'D:\PycharmProjects\logSorter\Test directories'
+            d = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
+            movedirectories(s, d)
 
     def remove_test_directories(self):
         # Remove tests directories
@@ -86,7 +100,7 @@ class FinalTest(unittest.TestCase):
 
         self.remove_test_directories()
 
-        created_groups = y.create_test_group()
+        created_groups = y.create_test_groups()
         actual = created_groups.keys()
         expected = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
         self.assertEqual(sorted(actual), expected)
@@ -99,7 +113,7 @@ class FinalTest(unittest.TestCase):
 
         # Get required test data.
         test_cases = y.get_test_cases()
-        created_groups = y.create_test_group()
+        created_groups = y.create_test_groups()
 
         # Tested method.
         y.sort_test_cases_into_groups(test_cases, created_groups)
@@ -112,5 +126,60 @@ class FinalTest(unittest.TestCase):
         self.assertEqual(second_test, 'FIRSTPART_Windows_452')
         self.assertEqual(third_test, 'FIRSTPART_OSX_87')
 
+    def test_move_to_directories(self):
+        self.create_envionment()
+
+        y = DirectoryManagement()
+        y.create_group_directory2()
+        test_cases = y.get_test_cases()
+        groups = y.create_test_groups()
+        y.sort_test_cases_into_groups(test_cases, groups)
+
+        y.sort_directories(groups)
+        main = os.listdir('./')
+
+        y.go_into_directory('Ubuntu_tests')
+        ubuntu = os.listdir('./')
+        y.return_to_main_directory()
+
+        y.go_into_directory('OSX_tests')
+        osx = os.listdir('./')
+        y.return_to_main_directory()
+
+        y.go_into_directory('Windows_tests')
+        windows = os.listdir('./')
+        y.return_to_main_directory()
+
+        expected_main = ['TC0000_0000', 'TC0001_0000', 'Ubuntu_tests', 'OSX_tests', 'Windows_tests']
+        expected_ubuntu = ['TC1000_2135', 'TC1000_4587', 'TC1001_2548', 'TC1002_5435']
+        expected_osx = ['TC3268_1032']
+        expected_windows = ['TC3267_1032']
+
+        self.assertEqual(sorted(main), sorted(expected_main))
+        self.assertEqual(sorted(ubuntu), sorted(expected_ubuntu))
+        self.assertEqual(sorted(osx), sorted(expected_osx))
+        self.assertEqual(sorted(windows), sorted(expected_windows))
+
+
 if __name__ == '__main__':
     unittest.main()
+
+# D:\PycharmProjects\logSorter\logs\move_directory_test
+# TC0000_0000
+# TC0001_0000
+# 'Ubuntu_tests',
+# 'OSX_tests',
+# 'Windows_tests'
+
+# D:\PycharmProjects\logSorter\logs\move_directory_test\Ubuntu_tests
+# TC1000_2135
+# TC1000_4587
+# TC1001_2548
+# TC1002_5435
+
+# D:\PycharmProjects\logSorter\logs\move_directory_test\Windows_tests
+# TC3267_1032
+
+# D:\PycharmProjects\logSorter\logs\move_directory_test\OSX_tests
+# TC3268_1032
+
