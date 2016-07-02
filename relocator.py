@@ -2,7 +2,7 @@ from os import listdir, path
 from shutil import copytree, copy2
 
 
-def movedirectories(src, dst, symlinks=False, ignore=None):
+def move_many_directories(src, dst, symlinks=False, ignore=None):
     for item in listdir(src):
         s = path.join(src, item)
         d = path.join(dst, item)
@@ -12,6 +12,18 @@ def movedirectories(src, dst, symlinks=False, ignore=None):
             copy2(s, d)
 
 
+def move_single_directory(src, dst, *filename, symlinks=False, ignore=None):
+    for item in listdir(src):
+        for file in filename:
+            if item.split('\\')[-1] == file:
+                s = path.join(src, item)
+                d = path.join(dst, item)
+                if path.isdir(s):
+                    copytree(s, d, symlinks, ignore)
+                else:
+                    copy2(s, d)
+
 # s = 'D:\PycharmProjects\logSorter\Test directories'
 # d = 'D:\PycharmProjects\logSorter\\new'
-# movedirectories(s, d)
+# move_many_directories(s, d)
+# move_single_directory(s, d, 'TC0000_0000')

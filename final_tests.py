@@ -5,7 +5,7 @@ import unittest
 
 from ddt import ddt, data
 from logSorter import DirectoryManagement
-from relocator import movedirectories
+from relocator import move_many_directories
 
 
 @ddt
@@ -18,14 +18,14 @@ class FinalTest(unittest.TestCase):
         path = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
         os.chdir(path)
         actual = os.listdir('./')
-        required = ['TC0000_0000', 'TC0001_0000', 'TC1000_2135', 'TC1000_4587', 'TC1001_2548', 'TC1002_5435', 'TC3267_1032',
-         'TC3268_1032']
+        required = ['TC0000_0000', 'TC0001_0000', 'TC1000_2135', 'TC1000_4587',
+                    'TC1001_2548', 'TC1002_5435', 'TC3267_1032', 'TC3268_1032']
 
         if actual != required:
             shutil.rmtree(path, ignore_errors=True)
             s = 'D:\PycharmProjects\logSorter\Test directories'
             d = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
-            movedirectories(s, d)
+            move_many_directories(s, d)
 
     def remove_test_directories(self):
         # Remove tests directories
@@ -97,9 +97,9 @@ class FinalTest(unittest.TestCase):
     def test_create_groups(self):
         y = DirectoryManagement()
         y.create_group_directory2()
+        y.get_group_directory_paths()
 
         self.remove_test_directories()
-
         created_groups = y.create_test_groups()
         actual = created_groups.keys()
         expected = ['OSX_tests', 'Ubuntu_tests', 'Windows_tests']
@@ -108,6 +108,7 @@ class FinalTest(unittest.TestCase):
     def test_sort_tests_into_groups(self):
         y = DirectoryManagement()
         y.create_group_directory2()
+        y.get_group_directory_paths()
 
         self.remove_test_directories()
 
@@ -126,16 +127,65 @@ class FinalTest(unittest.TestCase):
         self.assertEqual(second_test, 'FIRSTPART_Windows_452')
         self.assertEqual(third_test, 'FIRSTPART_OSX_87')
 
+    def test_set_group_directory_path(self):
+        self.create_envionment()
+        y = DirectoryManagement()
+        y.create_group_directory2()
+        y.get_group_directory_paths()
+        groups = y.create_test_groups()
+
+        osx = groups['OSX_tests']
+        ubuntu = groups['Ubuntu_tests']
+        windows = groups['Windows_tests']
+
+        self.remove_test_directories()
+
+        expectedOSX = r'D:\PycharmProjects\logSorter\logs\move_directory_test\OSX_tests'
+        expectedUbuntu = r'D:\PycharmProjects\logSorter\logs\move_directory_test\Ubuntu_tests'
+        expectedWindows = r'D:\PycharmProjects\logSorter\logs\move_directory_test\Windows_tests'
+
+        self.assertEqual(osx.directory_path, expectedOSX)
+        self.assertEqual(ubuntu.directory_path, expectedUbuntu)
+        self.assertEqual(windows.directory_path, expectedWindows)
+
+    def test_set_test_case_path(self):
+
+        """" Pointless test. """
+
+        self.create_envionment()
+        y = DirectoryManagement()
+
+        # Tested method.
+        test_cases = y.get_test_cases()
+
+        expected = [
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC0000_0000',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC0001_0000',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1000_2135',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1000_4587',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1001_2548',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1002_5435',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC3267_1032',
+            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC3268_1032'
+        ]
+        found = []
+        for case in test_cases:
+            found.append(case.directory_path)
+
+        self.assertEqual(sorted(found), sorted(expected))
+
     def test_move_to_directories(self):
         self.create_envionment()
 
         y = DirectoryManagement()
         y.create_group_directory2()
+        y.get_group_directory_paths()
         test_cases = y.get_test_cases()
         groups = y.create_test_groups()
         y.sort_test_cases_into_groups(test_cases, groups)
 
-        y.sort_directories(groups)
+        # Tested method.
+        y.sort_directories_into_group_directories(groups)
         main = os.listdir('./')
 
         y.go_into_directory('Ubuntu_tests')

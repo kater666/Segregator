@@ -1,6 +1,7 @@
 import glob
 import os
 import re
+import relocator
 import shutil
 
 
@@ -14,7 +15,7 @@ class TestGroup(object):
         self.passes = 0
         self.fails = 0
         self.blocks = 0
-        self.directory_path = ''
+        self.directory_path = None
 
 
 class TestCase(TestGroup):
@@ -25,6 +26,7 @@ class TestCase(TestGroup):
         self.tc_name = ''
         self.group_name = ''
         self.tc_status = 'Unknown'
+        self.directory_path = None
 
 
 class LogBrowser(object):
@@ -89,6 +91,7 @@ class DirectoryManagement(LogBrowser):
         self.search_directories = []
         self.created_directories = []
         self.required_directories = []
+        self.paths = {}
 
         # Call methods to collect required data.
         self.update_created_directories()
@@ -162,10 +165,27 @@ class DirectoryManagement(LogBrowser):
             test_case_object.tc_name = self.search_pattern_in_file(file_name)
             test_case_object.group_name = self.get_group_name(test_case_object.tc_name)
             test_case_object.tc_status = self.get_test_case_status(file_name)
+            test_case_object.directory_path = os.getcwd()
             test_cases.append(test_case_object)
             self.return_to_main_directory()
 
         return test_cases
+
+    def get_group_directory_paths(self):
+
+        self.return_to_main_directory()
+        paths = {}
+        for directory in glob.glob('*_tests'):
+            path = os.path.join(self.working_directory, directory)
+            paths[directory] = path
+        self.paths = paths
+
+    def get_test_case_directory_path(self, tc_name):
+        path = ''
+        for directory in glob.glob('TC*'):
+            if directory == tc_name:
+                path = os.path.join(self.working_directory, directory)
+        return path
 
     def create_test_groups(self):
         created_groups = {}
@@ -173,6 +193,7 @@ class DirectoryManagement(LogBrowser):
             # directory is a name of a group
             # directory = 'Ubuntu_tests'
             group = TestGroup(directory)
+            group.directory_path = self.paths[directory]
             created_groups[directory] = group
 
         return created_groups
@@ -195,41 +216,54 @@ class DirectoryManagement(LogBrowser):
                     elif test.tc_status == 'BLOCKED':
                         test_groups[group].blocks += 1
 
-    def sort_directories(self, test_group):
-        pass
+    def sort_directories_into_group_directories(self, groups):
+        group_names = groups.keys()
+        for group in groups:
+            if groups[group].group_name in group_names:
+                test_cases = [case for case in groups[group].test_cases]
+                relocator.move_single_directory(self.working_directory, group.directory_path, )
+                """"" o kurwa co ja zrobilem """
+
+
+def remove_test_directories():
+    for crap in glob.glob('*_tests'):
+        shutil.rmtree(crap)
 
 
 def main():
     os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
     y = DirectoryManagement()
 
+    # Prepare environment.
     y.create_group_directory2()
-
-    for crap in glob.glob('*_tests'):
-        shutil.rmtree(crap)
+    y.get_group_directory_paths()
+    remove_test_directories()
 
     # Get required test data.
     test_cases = y.get_test_cases()
     groups = y.create_test_groups()
 
-    # Tested method.
     y.sort_test_cases_into_groups(test_cases, groups)
+
+    # Currently tested method.
+    y.sort_directories_into_group_directories(groups)
 
     # for i in test_cases:
     #     print(i.__dict__)
-
-    for key in groups:
-        print('======== %s =======' % key)
-        print('passes:', groups[key].passes)
-        print('fails:', groups[key].fails)
-        print('blocks:', groups[key].blocks)
-        print('Test cases:\n')
-        for i in groups[key].test_cases:
-            print(i.tc_name)
-            print(i.tc_status)
-            print(i.tc_id)
-            print(i.group_name)
-            print('\n')
+    #
+    # for key in groups:
+    #     print('======== %s =======' % key)
+    #     print('passes:', groups[key].passes)
+    #     print('fails:', groups[key].fails)
+    #     print('blocks:', groups[key].blocks)
+    #     print('directory path:', groups[key].directory_path)
+    #     print('Test cases:\n')
+    #     for i in groups[key].test_cases:
+    #         print(i.tc_name)
+    #         print(i.tc_status)
+    #         print(i.tc_id)
+    #         print(i.group_name)
+    #         print('\n')
 
 if __name__ == '__main__':
     main()
