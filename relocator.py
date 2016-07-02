@@ -12,9 +12,9 @@ def move_many_directories(src, dst, symlinks=False, ignore=None):
             copy2(s, d)
 
 
-def move_single_directory(src, dst, *filename, symlinks=False, ignore=None):
+def move_single_directory(src, dst, files, symlinks=False, ignore=None):
     for item in listdir(src):
-        for file in filename:
+        for file in files:
             if item.split('\\')[-1] == file:
                 s = path.join(src, item)
                 d = path.join(dst, item)

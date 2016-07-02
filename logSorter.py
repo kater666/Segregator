@@ -1,7 +1,7 @@
 import glob
 import os
 import re
-import relocator
+import relocator as r
 import shutil
 
 
@@ -218,11 +218,12 @@ class DirectoryManagement(LogBrowser):
 
     def sort_directories_into_group_directories(self, groups):
         group_names = groups.keys()
+        test_cases = {}
         for group in groups:
             if groups[group].group_name in group_names:
-                test_cases = [case for case in groups[group].test_cases]
-                relocator.move_single_directory(self.working_directory, group.directory_path, )
-                """"" o kurwa co ja zrobilem """
+                test_cases[group] = [case for case in groups[group].test_cases]
+
+            r.move_single_directory(self.working_directory, groups[group].directory_path, test_cases[group])
 
 
 def remove_test_directories():
