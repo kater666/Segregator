@@ -8,5 +8,5 @@ for i in range(0, 100):
 
 logging.info("Test case: 'ZSUBUNTU_TEST_MG_46' result: failed'")
 
-for i in range(0, 25):
+for j in range(0, 25):
     logging.debug("THIS IS RANDOM LINE THAT CAN APPEAR IN FILELOG.")

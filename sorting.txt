@@ -1,0 +1,29 @@
+[03-07-2016 18:30:22] INFO    Started.
+[03-07-2016 18:30:22] INFO    Creating OSX_tests group directory.
+[03-07-2016 18:30:22] INFO    Directory path: D:\PycharmProjects\logSorter\logs\move_directory_test\OSX_tests
+[03-07-2016 18:30:22] INFO    Creating Ubuntu_tests group directory.
+[03-07-2016 18:30:22] INFO    Directory path: D:\PycharmProjects\logSorter\logs\move_directory_test\Ubuntu_tests
+[03-07-2016 18:30:22] INFO    Creating Windows_tests group directory.
+[03-07-2016 18:30:22] INFO    Directory path: D:\PycharmProjects\logSorter\logs\move_directory_test\Windows_tests
+[03-07-2016 18:30:22] INFO    Created TC1000_2135, FIRSTPART_UBUNTU_12 test case. Status: PASSED
+[03-07-2016 18:30:22] INFO    Created TC1000_4587, FIRSTPART_UBUNTU_12 test case. Status: FAILED
+[03-07-2016 18:30:22] INFO    Created TC1001_2548, FIRSTPART_UBUNTU_13 test case. Status: PASSED
+[03-07-2016 18:30:22] INFO    Created TC1002_5435, FIRSTPART_UBUNTU_14 test case. Status: FAILED
+[03-07-2016 18:30:22] INFO    Created TC3267_1032, FIRSTPART_Windows_452 test case. Status: FAILED
+[03-07-2016 18:30:22] INFO    Created TC3268_1032, FIRSTPART_OSX_87 test case. Status: BLOCKED
+[03-07-2016 18:30:22] INFO    Creating group: OSX_tests.
+[03-07-2016 18:30:22] INFO    Creating group: Ubuntu_tests.
+[03-07-2016 18:30:22] INFO    Creating group: Windows_tests.
+[03-07-2016 18:30:22] INFO    OSX_tests group.
+[03-07-2016 18:30:22] INFO    Blocked/Failed:
+[03-07-2016 18:30:22] INFO    TC3268_1032, FIRSTPART_OSX_87 status: BLOCKED
+[03-07-2016 18:30:22] INFO    Ubuntu_tests group.
+[03-07-2016 18:30:22] INFO    Blocked/Failed:
+[03-07-2016 18:30:22] INFO    TC1000_2135, FIRSTPART_UBUNTU_12 status: PASSED
+[03-07-2016 18:30:22] INFO    TC1000_4587, FIRSTPART_UBUNTU_12 status: FAILED
+[03-07-2016 18:30:22] INFO    TC1001_2548, FIRSTPART_UBUNTU_13 status: PASSED
+[03-07-2016 18:30:22] INFO    TC1002_5435, FIRSTPART_UBUNTU_14 status: FAILED
+[03-07-2016 18:30:22] INFO    Windows_tests group.
+[03-07-2016 18:30:22] INFO    Blocked/Failed:
+[03-07-2016 18:30:22] INFO    TC3267_1032, FIRSTPART_Windows_452 status: FAILED
+[03-07-2016 18:30:22] INFO    Finished.

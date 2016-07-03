@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 import re
 import relocator as r
@@ -15,6 +16,7 @@ class TestGroup(object):
         self.fails = 0
         self.blocks = 0
         self.directory_path = None
+        self.blocked_directory = None
 
 
 class TestCase(TestGroup):
@@ -145,7 +147,10 @@ class DirectoryManagement(LogBrowser):
     def create_group_directory2(self):
         for directory in self.required_directories:
             if directory not in self.created_directories:
-                os.mkdir(self.working_directory + '\\%s' % directory)
+                path = self.working_directory + '\\%s' % directory
+                logging.info('Creating %s group directory.' % directory)
+                logging.info('Directory path: %s' % path)
+                os.mkdir(path)
 
         self.required_directories = self.required_directories[:]
         self.update_created_directories()
@@ -164,6 +169,14 @@ class DirectoryManagement(LogBrowser):
             test_case_object.group_name = self.get_group_name(test_case_object.tc_name)
             test_case_object.tc_status = self.get_test_case_status(file_name)
             test_cases.append(test_case_object)
+
+            if test_case_object.tc_name is None:
+                pass
+            else:
+                logging.info('Created %s, %s test case. Status: %s' % (directory,
+                                                                       test_case_object.tc_name,
+                                                                       test_case_object.tc_status))
+
             self.return_to_main_directory()
 
         return test_cases
@@ -186,7 +199,10 @@ class DirectoryManagement(LogBrowser):
 
     def create_test_groups(self):
         created_groups = {}
+
         for directory in self.created_directories:
+            logging.info('Creating group: %s.' % directory)
+
             # directory is a name of a group
             # directory = 'Ubuntu_tests'
             group = TestGroup(directory)
@@ -219,19 +235,36 @@ class DirectoryManagement(LogBrowser):
         for group in groups:
             if groups[group].group_name in group_names:
                 test_cases[group] = [case.tc_id for case in groups[group].test_cases]
-            # print(self.working_directory)
-            # print(groups[group].directory_path)
-            # print(test_cases[group])
+
             r.move_single_directory(self.working_directory, groups[group].directory_path, test_cases[group])
 
 
-def remove_test_directories():
-    for crap in glob.glob('*_tests'):
-        shutil.rmtree(crap)
+def create_envionment():
+    path = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
+    os.chdir(path)
+    actual = os.listdir('./')
+    required = ['TC0000_0000', 'TC0001_0000', 'TC1000_2135', 'TC1000_4587',
+                'TC1001_2548', 'TC1002_5435', 'TC3267_1032', 'TC3268_1032']
+
+    if actual != required:
+        shutil.rmtree(path, ignore_errors=True)
+        s = 'D:\PycharmProjects\logSorter\Test directories'
+        d = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
+        r.copy_many_directories(s, d)
 
 
 def main():
-    os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)-7s %(message)s',
+                        datefmt='[%d-%m-%Y %H:%M:%S]',
+                        filename='sorting.txt',
+                        filemode='w')
+
+    logging.info('Started.')
+
+    # TODO: delete create_invironment before using this module.
+    create_envionment()
     y = DirectoryManagement()
     y.create_group_directory2()
     y.get_group_directory_paths()
@@ -240,7 +273,46 @@ def main():
     y.sort_test_cases_into_groups(test_cases, groups)
     y.sort_directories_into_group_directories(groups)
 
-    #remove_test_directories()
+    for group in groups:
+
+        # Create blocked directory if blocked/failed test cases appear in group.
+        if groups[group].blocks > 0 or groups[group].fails > 0:
+            directory_path = groups[group].directory_path
+            blocked = 'blocked'
+            make_dir = os.path.join(directory_path, blocked)
+            os.makedirs(make_dir)
+            groups[group].blocked_directory = make_dir
+
+        # Sort blocked/failed test cases into 'blocked' directory.
+        y.go_into_directory(group)
+        test_cases = groups[group].test_cases
+        logging.info('%s group.' % group)
+        logging.info('Blocked/Failed:')
+        for case in test_cases:
+            if case.tc_status == 'BLOCKED' or case.tc_status == 'FAILED':
+                r.move_single_directory(groups[group].directory_path, groups[group].blocked_directory, [case.tc_id])
+
+                logging.info('%s, %s status: %s' % (case.tc_id, case.tc_name, case.tc_status))
+            else:
+                logging.info('%s, %s status: %s' % (case.tc_id, case.tc_name, case.tc_status))
+
+        y.return_to_main_directory()
+    logging.info('Finished.')
+
+    # for key in groups:
+    #     print('======== %s =======' % key)
+    #     print('passes:', groups[key].passes)
+    #     print('fails:', groups[key].fails)
+    #     print('blocks:', groups[key].blocks)
+    #     print('directory path:', groups[key].directory_path)
+    #     print('Test cases:\n')
+    #     for i in groups[key].test_cases:
+    #         print(i.tc_name)
+    #         print(i.tc_status)
+    #         print(i.tc_id)
+    #         print(i.group_name)
+    #         print('\n')
+
 
 if __name__ == '__main__':
     main()
