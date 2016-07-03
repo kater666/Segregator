@@ -8,7 +8,6 @@ import shutil
 class TestGroup(object):
 
     def __init__(self, group_name):
-        #self.group_range = {}  #maybe will not be used
         self.group_name = group_name
         self.test_cases = []
         self.tc_count = len(self.test_cases)
@@ -26,7 +25,6 @@ class TestCase(TestGroup):
         self.tc_name = ''
         self.group_name = ''
         self.tc_status = 'Unknown'
-        self.directory_path = None
 
 
 class LogBrowser(object):
@@ -165,7 +163,6 @@ class DirectoryManagement(LogBrowser):
             test_case_object.tc_name = self.search_pattern_in_file(file_name)
             test_case_object.group_name = self.get_group_name(test_case_object.tc_name)
             test_case_object.tc_status = self.get_test_case_status(file_name)
-            test_case_object.directory_path = os.getcwd()
             test_cases.append(test_case_object)
             self.return_to_main_directory()
 
@@ -221,8 +218,10 @@ class DirectoryManagement(LogBrowser):
         test_cases = {}
         for group in groups:
             if groups[group].group_name in group_names:
-                test_cases[group] = [case for case in groups[group].test_cases]
-
+                test_cases[group] = [case.tc_id for case in groups[group].test_cases]
+            # print(self.working_directory)
+            # print(groups[group].directory_path)
+            # print(test_cases[group])
             r.move_single_directory(self.working_directory, groups[group].directory_path, test_cases[group])
 
 
@@ -234,37 +233,48 @@ def remove_test_directories():
 def main():
     os.chdir('D:\PycharmProjects\logSorter\logs\move_directory_test')
     y = DirectoryManagement()
-
-    # Prepare environment.
     y.create_group_directory2()
     y.get_group_directory_paths()
-    remove_test_directories()
-
-    # Get required test data.
     test_cases = y.get_test_cases()
     groups = y.create_test_groups()
-
     y.sort_test_cases_into_groups(test_cases, groups)
-
-    # Currently tested method.
     y.sort_directories_into_group_directories(groups)
 
-    # for i in test_cases:
-    #     print(i.__dict__)
-    #
-    # for key in groups:
-    #     print('======== %s =======' % key)
-    #     print('passes:', groups[key].passes)
-    #     print('fails:', groups[key].fails)
-    #     print('blocks:', groups[key].blocks)
-    #     print('directory path:', groups[key].directory_path)
-    #     print('Test cases:\n')
-    #     for i in groups[key].test_cases:
-    #         print(i.tc_name)
-    #         print(i.tc_status)
-    #         print(i.tc_id)
-    #         print(i.group_name)
-    #         print('\n')
+    #remove_test_directories()
 
 if __name__ == '__main__':
     main()
+
+
+# y = DirectoryManagement()
+#
+# # Prepare environment.
+# y.create_group_directory2()
+# y.get_group_directory_paths()
+# remove_test_directories()
+#
+# # Get required test data.
+# test_cases = y.get_test_cases()
+# groups = y.create_test_groups()
+#
+# y.sort_test_cases_into_groups(test_cases, groups)
+#
+# # Currently tested method.
+# y.sort_directories_into_group_directories(groups)
+#
+# # for i in test_cases:
+# #     print(i.__dict__)
+# #
+# # for key in groups:
+# #     print('======== %s =======' % key)
+# #     print('passes:', groups[key].passes)
+# #     print('fails:', groups[key].fails)
+# #     print('blocks:', groups[key].blocks)
+# #     print('directory path:', groups[key].directory_path)
+# #     print('Test cases:\n')
+# #     for i in groups[key].test_cases:
+# #         print(i.tc_name)
+# #         print(i.tc_status)
+# #         print(i.tc_id)
+# #         print(i.group_name)
+# #         print('\n')

@@ -5,7 +5,7 @@ import unittest
 
 from ddt import ddt, data
 from logSorter import DirectoryManagement
-from relocator import move_many_directories
+from relocator import copy_many_directories
 
 
 @ddt
@@ -25,7 +25,7 @@ class FinalTest(unittest.TestCase):
             shutil.rmtree(path, ignore_errors=True)
             s = 'D:\PycharmProjects\logSorter\Test directories'
             d = 'D:\PycharmProjects\logSorter\logs\move_directory_test'
-            move_many_directories(s, d)
+            copy_many_directories(s, d)
 
     def remove_test_directories(self):
         # Remove tests directories
@@ -148,34 +148,9 @@ class FinalTest(unittest.TestCase):
         self.assertEqual(ubuntu.directory_path, expectedUbuntu)
         self.assertEqual(windows.directory_path, expectedWindows)
 
-    def test_set_test_case_path(self):
-
-        """" Pointless test. """
-
-        self.create_envionment()
-        y = DirectoryManagement()
-
-        # Tested method.
-        test_cases = y.get_test_cases()
-
-        expected = [
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC0000_0000',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC0001_0000',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1000_2135',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1000_4587',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1001_2548',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC1002_5435',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC3267_1032',
-            'D:\PycharmProjects\logSorter\logs\move_directory_test\TC3268_1032'
-        ]
-        found = []
-        for case in test_cases:
-            found.append(case.directory_path)
-
-        self.assertEqual(sorted(found), sorted(expected))
-
     def test_move_to_directories(self):
         self.create_envionment()
+        # cwd: D:\PycharmProjects\logSorter\logs\move_directory_test
 
         y = DirectoryManagement()
         y.create_group_directory2()
@@ -213,23 +188,3 @@ class FinalTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-# D:\PycharmProjects\logSorter\logs\move_directory_test
-# TC0000_0000
-# TC0001_0000
-# 'Ubuntu_tests',
-# 'OSX_tests',
-# 'Windows_tests'
-
-# D:\PycharmProjects\logSorter\logs\move_directory_test\Ubuntu_tests
-# TC1000_2135
-# TC1000_4587
-# TC1001_2548
-# TC1002_5435
-
-# D:\PycharmProjects\logSorter\logs\move_directory_test\Windows_tests
-# TC3267_1032
-
-# D:\PycharmProjects\logSorter\logs\move_directory_test\OSX_tests
-# TC3268_1032
-

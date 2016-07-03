@@ -1,4 +1,3 @@
-import glob
 import os
 import relocator as r
 import shutil
@@ -21,7 +20,7 @@ class FinalTest(unittest.TestCase):
             shutil.rmtree(self.path, ignore_errors=True)
             s = 'D:\PycharmProjects\logSorter\Test directories'
             d = self.path
-            r.move_single_directory(s, d, required)
+            r.copy_single_directory(s, d, required)
             os.mkdir('./destination')
 
     def test_move_single_directory(self):
