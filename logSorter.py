@@ -287,7 +287,8 @@ def main():
         y.go_into_directory(group)
         test_cases = groups[group].test_cases
         logging.info('%s group.' % group)
-        logging.info('Blocked/Failed:')
+        if groups[group].blocks > 1 or groups[group].fails > 1:
+            logging.info('Blocked/Failed:')
         for case in test_cases:
             if case.tc_status == 'BLOCKED' or case.tc_status == 'FAILED':
                 r.move_single_directory(groups[group].directory_path, groups[group].blocked_directory, [case.tc_id])
@@ -299,54 +300,6 @@ def main():
         y.return_to_main_directory()
     logging.info('Finished.')
 
-    # for key in groups:
-    #     print('======== %s =======' % key)
-    #     print('passes:', groups[key].passes)
-    #     print('fails:', groups[key].fails)
-    #     print('blocks:', groups[key].blocks)
-    #     print('directory path:', groups[key].directory_path)
-    #     print('Test cases:\n')
-    #     for i in groups[key].test_cases:
-    #         print(i.tc_name)
-    #         print(i.tc_status)
-    #         print(i.tc_id)
-    #         print(i.group_name)
-    #         print('\n')
-
 
 if __name__ == '__main__':
     main()
-
-
-# y = DirectoryManagement()
-#
-# # Prepare environment.
-# y.create_group_directory2()
-# y.get_group_directory_paths()
-# remove_test_directories()
-#
-# # Get required test data.
-# test_cases = y.get_test_cases()
-# groups = y.create_test_groups()
-#
-# y.sort_test_cases_into_groups(test_cases, groups)
-#
-# # Currently tested method.
-# y.sort_directories_into_group_directories(groups)
-#
-# # for i in test_cases:
-# #     print(i.__dict__)
-# #
-# # for key in groups:
-# #     print('======== %s =======' % key)
-# #     print('passes:', groups[key].passes)
-# #     print('fails:', groups[key].fails)
-# #     print('blocks:', groups[key].blocks)
-# #     print('directory path:', groups[key].directory_path)
-# #     print('Test cases:\n')
-# #     for i in groups[key].test_cases:
-# #         print(i.tc_name)
-# #         print(i.tc_status)
-# #         print(i.tc_id)
-# #         print(i.group_name)
-# #         print('\n')
