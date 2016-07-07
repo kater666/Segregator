@@ -185,7 +185,7 @@ class DirectoryManagement(LogBrowser):
 
         self.return_to_main_directory()
         paths = {}
-        for directory in glob.glob('*_tests'):
+        for directory in self.created_directories:
             path = os.path.join(self.working_directory, directory)
             paths[directory] = path
         self.paths = paths
@@ -287,8 +287,6 @@ def main():
         y.go_into_directory(group)
         test_cases = groups[group].test_cases
         logging.info('%s group.' % group)
-        if groups[group].blocks > 1 or groups[group].fails > 1:
-            logging.info('Blocked/Failed:')
         for case in test_cases:
             if case.tc_status == 'BLOCKED' or case.tc_status == 'FAILED':
                 r.move_single_directory(groups[group].directory_path, groups[group].blocked_directory, [case.tc_id])
